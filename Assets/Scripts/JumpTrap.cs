@@ -6,7 +6,7 @@ using UnityEngine;
 public class JumpTrap : MonoBehaviour
 {
    [SerializeField] private float jumpForece ;
-    private int playerLayer = 6;
+   [SerializeField]private int playerLayer;
 
     private void OnTriggerEnter(Collider other)
     {
