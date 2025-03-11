@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UIInventory : MonoBehaviour
@@ -22,11 +23,16 @@ public class UIInventory : MonoBehaviour
     private PlayerController controller;
     private PlayerCondition condition;
 
+    public Transform dropPosition;
+
+    ItemData selectedItem;
+    int selectedItemIndex;
 
     void Start()
     {
         controller = CharacterManager.Instance.Player.controller;
         condition = CharacterManager.Instance.Player.condition;
+        dropPosition= CharacterManager.Instance.Player.dropPosition;
 
         controller.Inventory += Toggle;
         CharacterManager.Instance.Player.additem += AddItem;
@@ -94,29 +100,126 @@ public class UIInventory : MonoBehaviour
                 return;
             }
         }
-
-        ItemData emptySlot = GetEmptySlot();
+        ItemSlot emptySlot = GetEmptySlot();
 
         if (emptySlot != null)
         {
-            emptySlot.item
+            emptySlot.item = data;
+            emptySlot.quantity = 1;
+            UpdateUI();
+            CharacterManager.Instance.Player.itemData = null;
+            return;
         }
 
-
+        ThrowItem(data);
 
         CharacterManager.Instance.Player.itemData = null;
     }
     void UpdateUI()
     {
-
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if(slots[i].item != null)
+            {
+                slots[i].Set();
+            }
+            else
+            {
+                slots[i].Clear();
+            }
+        }
     }
     ItemSlot GetItemStack(ItemData data)
     {
+        for(int i = 0; i < slots.Length; i++)
+        {
+            if(slots[i].item == data && slots[i].quantity < data.maxStackAmount)
+            {
+                return slots[i];
+            }
+        }
         return null;
     }
 
     ItemSlot GetEmptySlot()
     {
+        for(int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].item == null)
+            {
+                return slots[i];
+            }
+        }
         return null;
+    }
+
+    void ThrowItem(ItemData data)
+    {
+        Instantiate(data.dropPrefab, dropPosition.position,Quaternion.Euler(Vector3.one * Random.value *360));
+    }
+
+    public void SelectItem(int index)
+    {
+        if (slots[index].item == null) return;
+
+        selectedItem = slots[index].item;
+        selectedItemIndex = index;
+
+        selectedItemName.text = selectedItem.displayName;
+        selectedItemDescription.text = selectedItem.description;
+
+        selectedStatName.text = string.Empty;
+        selectedStatValue.text = string.Empty;
+
+        for (int i = 0; i < selectedItem.consumables.Length; i++)
+        {
+            selectedStatName.text += selectedItem.consumables[i].type.ToString() + "\n";
+            selectedStatValue.text += selectedItem.consumables[i].value.ToString() + "\n";
+        }
+
+        useButton.SetActive(selectedItem.type == ItemType.Consumable);
+        dropButton.SetActive(true);
+    }
+
+    public void OnuseButton()
+    {
+        if (selectedItem.type == ItemType.Consumable)
+        {
+            for (int i = 0; i < selectedItem.consumables.Length; i++)
+            {
+                switch (selectedItem.consumables[i].type)
+                {
+                    case ConsumableType.Health:
+                        condition.Heal(selectedItem.consumables[i].value);
+                            break;
+                    case ConsumableType.Buff:
+                        condition.Buff(selectedItem.consumables[i].value);
+                       break;
+
+                      
+                }
+            }
+            RemoveSeletedItem();
+        }
+    }
+
+    public void OndropButton()
+    {
+        ThrowItem(selectedItem);
+        RemoveSeletedItem();
+    }
+
+    void RemoveSeletedItem()
+    {
+        slots[selectedItemIndex].quantity--;
+
+        if( slots[selectedItemIndex].quantity <= 0)
+        {
+            selectedItem = null;
+            slots[selectedItemIndex].item = null;
+            selectedItemIndex = -1; 
+            ClearSelctedItemWindow();
+        }
+        UpdateUI();
     }
 }

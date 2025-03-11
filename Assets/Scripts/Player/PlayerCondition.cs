@@ -14,6 +14,7 @@ public class PlayerCondition : MonoBehaviour , IDamagalbe
     public PlayerController playerController;
 
     Condition health { get { return uiCondition.health; } }
+    Condition buffspeed { get { return uiCondition.speed; } }
 
     public event Action onTakeDamage;
 
@@ -31,6 +32,10 @@ public class PlayerCondition : MonoBehaviour , IDamagalbe
         health.Add(amout);
     }
 
+    public void Buff(float amout)
+    {
+        buffspeed.Add(amout);
+    }
     public void Die()
     {
         Debug.Log("ав╬З╢ы ");
