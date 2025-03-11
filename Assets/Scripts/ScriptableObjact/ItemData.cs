@@ -14,7 +14,7 @@ public enum ItemType
 public enum ConsumableType
 {
     Health,
-    Buff
+    Speed
 }
 [Serializable]
 public class ItemDataConsumable

@@ -3522,7 +3522,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Health
 
-    Hunger'
+    Speed'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4cb4b8049d70d234782bcfb2efe9cd08, type: 2}
   m_sharedMaterial: {fileID: -5870626172303419582, guid: 4cb4b8049d70d234782bcfb2efe9cd08, type: 2}

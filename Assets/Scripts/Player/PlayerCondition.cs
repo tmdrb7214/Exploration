@@ -8,13 +8,13 @@ public interface IDamagalbe
 {
     void TakePhysicalDamage(int damage);
 }
-public class PlayerCondition : MonoBehaviour , IDamagalbe
+public class PlayerCondition : MonoBehaviour , IDamagalbe 
 {
     public UICondition uiCondition;
     public PlayerController playerController;
 
     Condition health { get { return uiCondition.health; } }
-    Condition buffspeed { get { return uiCondition.speed; } }
+    CharacterManager movespeed { get { return movespeed; } }
 
     public event Action onTakeDamage;
 
@@ -32,9 +32,12 @@ public class PlayerCondition : MonoBehaviour , IDamagalbe
         health.Add(amout);
     }
 
-    public void Buff(float amout)
+    public void Buff(float speed)
     {
-        buffspeed.Add(amout);
+        CharacterManager.Instance.Player.controller.moveSpeed += speed;
+
+        Invoke("RemoveBuff", 5f);
+        
     }
     public void Die()
     {
@@ -45,5 +48,11 @@ public class PlayerCondition : MonoBehaviour , IDamagalbe
     {
         health.Subtract(damage);
         onTakeDamage?.Invoke();
+    }
+
+    public void RemoveBuff(float speed)
+    {
+        CharacterManager.Instance.Player.controller.moveSpeed -= speed;
+        Debug.Log("¹öÇÁ³¡");
     }
 }

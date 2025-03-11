@@ -192,7 +192,7 @@ public class UIInventory : MonoBehaviour
                     case ConsumableType.Health:
                         condition.Heal(selectedItem.consumables[i].value);
                             break;
-                    case ConsumableType.Buff:
+                    case ConsumableType.Speed:
                         condition.Buff(selectedItem.consumables[i].value);
                        break;
 
